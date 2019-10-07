@@ -1,2 +1,4 @@
 .idea
 venv
+sample_images/private*
+uploads/
