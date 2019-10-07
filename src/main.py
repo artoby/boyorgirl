@@ -1,29 +1,31 @@
-# from starlette.applications import Starlette
+import os
+import io
+import json
+import hashlib
+import logging
+from PIL import Image
+from http import HTTPStatus
+from pathlib import Path
 from starlette.routing import Router, Mount
-from starlette.staticfiles import StaticFiles
 from starlette.responses import JSONResponse
 from starlette.templating import Jinja2Templates
 import uvicorn
-#pip install md5hash
-#import md5hash as md5
-import hashlib
 from fastai.vision import load_learner, open_image, pil2tensor
-import os
-# python-multipart
-from PIL import Image
-import io
-import numpy as np
-import json
-from http import HTTPStatus
-
 
 templates = Jinja2Templates(directory='templates')
 
 # Resnet image size, incoming images will be reduced to this size (or remained current size if <max)
 max_image_size = 224
+workdir = Path("..")
+uploads_path = workdir/'uploads'
+ai_models_path = workdir/'ai_models'
+
+# ensure "uploads" folder
+if not os.path.exists(uploads_path):
+    os.mkdir(uploads_path)
 
 # Load prediction model
-learn = load_learner("ai_models")
+learn = load_learner(ai_models_path)
 
 # app = Starlette(debug=True)
 app = Router(routes=[
@@ -44,8 +46,8 @@ async def predict(request):
     h = hashlib.new('md5')
     h.update(file_contents)
     image_id = h.hexdigest()
-    image_path = "uploads/" + image_id + ".jpg"
-    metadata_path = "uploads/" + image_id + ".json"
+    image_path = uploads_path/(image_id + '.jpg')
+    metadata_path = uploads_path/(image_id + '.json')
 
     # PIL
     image = Image.open(io.BytesIO(file_contents))
@@ -55,16 +57,11 @@ async def predict(request):
     if max(size[0], size[1], max_image_size) > max_image_size:
         downscale_factor = float(max_image_size) / max(size)
         new_size = (int(round(size[0] * downscale_factor)), int(round(size[1] * downscale_factor)))
-        print(new_size)
         image = image.resize(new_size, Image.LANCZOS)
 
     # Convert to RGB if not RGBв
     if image.mode != "RGB":
         image = image.convert(mode="RGB")
-
-    # ensure "uploads" folder
-    if not os.path.exists("uploads"):
-        os.mkdir("uploads")
 
     # Save image in uploads
     # Dont' reduce quality to improve future learning capabilities
@@ -92,16 +89,17 @@ async def predict(request):
 
 @app.route(path='/api/feedback', methods=['POST'])
 async def feedback(request):
-
     r = await request.json()
+
     if "image_id" not in r:
         return JSONResponse({"error": "Request should contain 'image_id'"}, status_code=HTTPStatus.BAD_REQUEST)
     image_id = r["image_id"]
+
     if "actual_class" not in r:
         return JSONResponse({"error": "Request should contain 'actual_class'"}, status_code=HTTPStatus.BAD_REQUEST)
     actual_class = r["actual_class"]
 
-    metadata_path = "uploads/" + image_id + ".json"
+    metadata_path = uploads_path/(image_id + '.json')
     metadata = { }
     if os.path.isfile(metadata_path):
         with open(metadata_path, "r") as f:
