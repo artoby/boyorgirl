@@ -18,7 +18,15 @@
 
 # boyorgirl.artoby.me
 server {
+
+#    Serve static - used to check if DNS works
     location / {
+      try_files $uri $uri/ =404;
+    }
+    root /home/artoby/BoyOrGirl/templates;
+    index index.html;
+
+    location /temp {
 
       proxy_set_header        Host $host;
       proxy_set_header        X-Real-IP $remote_addr;
@@ -33,6 +41,7 @@ server {
     }
 
     server_name boyorgirl.artoby.me www.boyorgirl.artoby.me;
+
 #    listen [::]:443 ssl; # managed by Certbot
 #    listen 443 ssl; # managed by Certbot
 #    ssl_certificate /etc/letsencrypt/live/boyorgirl.artoby.me/fullchain.pem; # managed by Certbot
@@ -40,10 +49,19 @@ server {
 #    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
 #    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
 
-    ssl on;
-    ssl_session_cache  builtin:1000  shared:SSL:10m;
+#    ssl on;
+#    ssl_session_cache  builtin:1000  shared:SSL:10m;
 
     access_log            /var/log/nginx/boyorgirl.artoby.me.access.log;
+
+
+
+    listen 443 ssl; # managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/boyorgirl.artoby.me/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/boyorgirl.artoby.me/privkey.pem; # managed by Certbot
+    include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+    ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
 
 }
 
@@ -63,3 +81,17 @@ server {
     return 404; # managed by Certbot
 }
 
+
+#server {
+#    if ($host = boyorgirl.artoby.me) {
+#        return 301 https://$host$request_uri;
+#    } # managed by Certbot
+
+
+
+#    server_name boyorgirl.artoby.me www.boyorgirl.artoby.me;
+#    listen 80;
+#    return 404; # managed by Certbot
+
+
+#}
