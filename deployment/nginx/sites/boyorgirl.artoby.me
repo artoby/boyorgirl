@@ -34,10 +34,10 @@ server {
       proxy_set_header        X-Forwarded-Proto $scheme;
 
       # Fix the “It appears that your reverse proxy set up is broken" error.
-      proxy_pass          http://localhost:80;
+      proxy_pass          http://localhost:8081;
       proxy_read_timeout  90;
 
-      proxy_redirect      http://localhost:80 https://boyorgirl.artoby.me;
+      proxy_redirect      http://localhost:8081 https://boyorgirl.artoby.me;
     }
 
     server_name boyorgirl.artoby.me www.boyorgirl.artoby.me;
