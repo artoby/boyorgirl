@@ -2,7 +2,6 @@ import os
 import io
 import json
 import hashlib
-import logging
 from PIL import Image
 from http import HTTPStatus
 from pathlib import Path
@@ -12,13 +11,13 @@ from starlette.templating import Jinja2Templates
 import uvicorn
 from fastai.vision import load_learner, open_image, pil2tensor
 
-templates = Jinja2Templates(directory='templates')
-
 # Resnet image size, incoming images will be reduced to this size (or remained current size if <max)
 max_image_size = 224
 workdir = Path("..")
 uploads_path = workdir/'uploads'
 ai_models_path = workdir/'ai_models'
+
+templates = Jinja2Templates(directory=str(workdir/'templates'))
 
 # ensure "uploads" folder
 if not os.path.exists(uploads_path):
@@ -116,4 +115,4 @@ async def homepage(request):
     return templates.TemplateResponse('index.html', {'request': request})
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8081)
