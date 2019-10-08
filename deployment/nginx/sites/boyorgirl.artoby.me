@@ -54,6 +54,8 @@ server {
       proxy_redirect      http://localhost:3100 https://boyorgirl.artoby.me;
     }
 
+    client_max_body_size 20M;
+
     server_name boyorgirl.artoby.me www.boyorgirl.artoby.me;
 
     access_log            /var/log/nginx/boyorgirl.artoby.me.access.log;
