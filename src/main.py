@@ -8,6 +8,8 @@ from pathlib import Path
 from starlette.routing import Router, Mount
 from starlette.responses import JSONResponse
 from starlette.templating import Jinja2Templates
+from starlette.applications import Starlette
+from starlette.middleware.cors import CORSMiddleware
 import uvicorn
 from fastai.vision import load_learner, open_image, pil2tensor
 
@@ -27,9 +29,16 @@ if not os.path.exists(uploads_path):
 learn = load_learner(ai_models_path)
 
 # app = Starlette(debug=True)
-app = Router(routes=[
-    # Mount('/static', app=StaticFiles(directory='static'), name="static"),
-])
+
+app = Starlette()
+app.add_middleware(CORSMiddleware, allow_origins=['http://localhost:3000',
+                                                  'http://boyorgirl.artoby.me',
+                                                  'https://boyorgirl.artoby.me'])
+# app.add_middleware(CORSMiddleware, allow_origins=['*'])
+
+# app = Router(routes=[
+#     # Mount('/static', app=StaticFiles(directory='static'), name="static"),
+# ])
 
 @app.route('/api/hello_world')
 async def homepage(request):
@@ -94,9 +103,9 @@ async def feedback(request):
         return JSONResponse({"error": "Request should contain 'image_id'"}, status_code=HTTPStatus.BAD_REQUEST)
     image_id = r["image_id"]
 
-    if "actual_class" not in r:
-        return JSONResponse({"error": "Request should contain 'actual_class'"}, status_code=HTTPStatus.BAD_REQUEST)
-    actual_class = r["actual_class"]
+    if "is_correct" not in r:
+        return JSONResponse({"error": "Request should contain 'is_correct'"}, status_code=HTTPStatus.BAD_REQUEST)
+    is_correct = r["is_correct"]
 
     metadata_path = uploads_path/(image_id + '.json')
     metadata = { }
@@ -104,7 +113,7 @@ async def feedback(request):
         with open(metadata_path, "r") as f:
             metadata = json.load(f)
 
-    metadata["actual_class"] = actual_class
+    metadata["is_correct"] = is_correct
     with open(metadata_path, "w") as f:
         json.dump(metadata, f, sort_keys=True, indent=2)
 
@@ -115,4 +124,4 @@ async def homepage(request):
     return templates.TemplateResponse('index.html', {'request': request})
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8081)
+    uvicorn.run(app, host='0.0.0.0', port=3100)
