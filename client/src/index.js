@@ -93,12 +93,33 @@ class PredictForm extends React.Component {
     }
   }
 
+  responseText(response) {
+    return Promise.all([response, response.text()])
+  }
+
+  responseLog([response, text]) {
+    console.log("Response received: " + text)
+    return [response, text]
+  }
+
+  responseCheckError([response, text]) {
+    if (!response.ok) {
+      throw Error(response.status + " " + response.statusText);
+    }
+    return [response, text]
+  }
+
+  responseJSON([response, text]) {
+    let json = JSON.parse(text)
+    return [response, json]
+  }
+
   onFeedbackClicked(isCorrect) {
     // Update state
     this.setState({
       predictedCorrect: isCorrect
     })
-
+    
     // Send feedback to backend
     fetch(`${API_ROOT}/feedback`, {
       method: 'POST',
@@ -108,14 +129,12 @@ class PredictForm extends React.Component {
         is_correct: isCorrect
       }),
     })
-      .then(response => response.json())
-      .then(response => {
-        console.log(response)
-
-      })
-      .catch(error => {
-        console.log(error)
-      }
+      .then(this.responseText)
+      .then(this.responseLog)
+      .then(this.responseCheckError)
+      .catch (error => {
+          console.log(error)
+        }
       )
   }
 
@@ -173,17 +192,18 @@ class PredictForm extends React.Component {
       method: 'POST',
       body: formData,
     })
-      .then(response => response.text())
-      .then(response => {
-        console.log("Response received: " + response)
-        response = JSON.parse(response)
-        this.setPrediction(response)
+      .then(this.responseText)
+      .then(this.responseLog)
+      .then(this.responseCheckError)
+      .then(this.responseJSON)
+      .then(([response, json]) => {
+        this.setPrediction(json)
       })
       .catch(error => {
         console.log(error)
-        this.setStatus("Error: " + error)
+        this.setStatus(error.toString())
       }
-      );
+      )
 
     // Switch UI state on file submitted
     this.onNewFileSubmitted()
