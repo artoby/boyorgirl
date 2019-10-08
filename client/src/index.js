@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import Image from 'react-bootstrap/Image'
-import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Button from 'react-bootstrap/Button'
 // import Col from 'react-bootstrap/Col'
@@ -11,13 +9,17 @@ import 'holderjs'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { API_ROOT } from './api-config';
 
+const CLASS_BOY = "boys"
+const CLASS_GIRL = "girls"
+
 class PredictForm extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
       fileLocalURL: null,
-      status: null,
+      error: null,
+      isProcessing: false,
       prediction: null,
       feedbackVisible: false,
       predictedCorrect: null
@@ -30,66 +32,101 @@ class PredictForm extends React.Component {
 
   render() {
     let image_src = (this.state.fileLocalURL != null)
-      ? this.state.fileLocalURL
-      : "holder.js/200x200?auto=yes&text=↓Choose%20File%20to%20start↓"
+    ? this.state.fileLocalURL
+    : "holder.js/200x200?auto=yes&text=↑Choose%20File%20to%20start↑"
 
     return (
-      <Container>
-        <Navbar bg="light" expand="lg">
-          <Navbar.Brand href="#home">Check if baby boy or girl on the photo</Navbar.Brand>
-        </Navbar>
+      <div class="container">
+        <div class="content">
+          {/* <Navbar bg="light" expand="lg">
+            <Navbar.Brand href="#home" align="center">Check if baby boy or girl on the photo</Navbar.Brand>
+          </Navbar> */}
+          <h2 align="center">Check if baby <span class="boy">boy</span> or <span class="girl">girl</span> on the photo</h2>
 
-        <Row>
-          <Image src={image_src} style={{ height: "200px" }} />
-        </Row>
-
-        {this.renderStatus()}
-        {this.renderFeedback()}
-
-        <Row>
-          <input
+          {/* <input
             type="file"
-            onChange={(event) => this.onImageSelect(event)} />
-        </Row>
-      </Container>
+            class="file-input"
+            onChange={(event) => this.onImageSelect(event)}
+          /> */}
+          
+          <div align="center">
+            <input type="file" id="file" onChange={(event) => this.onImageSelect(event)}/>
+            <label for="file">Choose File</label>
+            </div>
 
+          <div class="overlay-image">
+            <img src={image_src} />
+            {this.renderImageOverlay()}
+          </div>
+
+          {this.renderError()}
+
+          {this.renderFeedback()}
+
+          
+        </div>
+
+      </div>
     );
   }
 
-  renderStatus() {
-    if (this.state.status != null) {
+  renderImageOverlay() {
+    if (this.state.isProcessing) {
       return (
-        <Row>
-          <label>{this.state.status}</label>
-        </Row>
+        <div class="text overlay-back">Processing...</div>
+      )
+    } else if (this.state.prediction != null) {
+      let prediction = this.state.prediction
+      let spanClass = (prediction["predicted_class"] == CLASS_BOY)
+        ? "boy"
+        : "girl"
+      let text = (prediction["predicted_class"] == CLASS_BOY)
+        ? "Boy"
+        : "Girl"
+      text += " " + Math.round(prediction["probability"] * 100) + "%"
+
+      return (
+        <div class="text overlay-back"><span class={spanClass}>{text}</span></div>
       )
     }
-    else {
-      return
+  }
+
+  renderError() {
+    if (this.state.error != null) {
+      return (
+        <div>
+          <label>{this.state.error}</label>
+        </div>
+      )
     }
   }
 
   renderFeedback() {
     if (this.state.feedbackVisible) {
-      let defaultStyle = { width: "60px", height: "30px" }
-      let selectedStyle = { width: "80px", height: "40px" }
-      let yesStyle = (this.state.predictedCorrect === true)
-        ? selectedStyle
-        : defaultStyle
-      let noStyle = (this.state.predictedCorrect === false)
-        ? selectedStyle
-        : defaultStyle
+      // // Set style for buttons
+      // {
+
+      // }
+      let yesStyle, noStyle
+      if (this.state.predictedCorrect == null) {
+        yesStyle = noStyle = "toggle"
+      } else if (this.state.predictedCorrect) {
+        yesStyle = "toggleOn"
+        noStyle = "toggleOff"
+      } else {
+        yesStyle = "toggleOff"
+        noStyle = "toggleOn"
+      }
 
       return (
-        <Row>
-          <label>Is it correct?</label>
-          <Button variant="outline-success" style={yesStyle} onClick={() => this.onFeedbackClicked(true)}>Yes</Button>
-          <Button variant="outline-danger" style={noStyle} onClick={() => this.onFeedbackClicked(false)}>No</Button>
-        </Row>
+        <div align="center">
+          <h3>Is it correct?</h3>
+          <div>
+            <Button className={yesStyle}  variant="success" onClick={() => this.onFeedbackClicked(true)}>Yes</Button>
+            <Button className={noStyle} variant="danger" onClick={() => this.onFeedbackClicked(false)}>No</Button>
+          </div>
+        </div>
       )
-    }
-    else {
-      return
     }
   }
 
@@ -119,11 +156,11 @@ class PredictForm extends React.Component {
     this.setState({
       predictedCorrect: isCorrect
     })
-    
+
     // Send feedback to backend
     fetch(`${API_ROOT}/feedback`, {
       method: 'POST',
-      // headers: { 'Content-Type': 'application/json' },
+      // headers: {'Content-Type': 'application/json' },
       body: JSON.stringify({
         image_id: this.state.prediction["image_id"],
         is_correct: isCorrect
@@ -132,9 +169,9 @@ class PredictForm extends React.Component {
       .then(this.responseText)
       .then(this.responseLog)
       .then(this.responseCheckError)
-      .catch (error => {
-          console.log(error)
-        }
+      .catch(error => {
+        console.log(error)
+      }
       )
   }
 
@@ -154,31 +191,21 @@ class PredictForm extends React.Component {
       prediction: prediction
     })
 
-    // Upldate status
-    let newStatus = prediction["predicted_class"]
-      + ", "
-      + Math.round(prediction["probability"] * 100) + "%"
-    this.setStatus(newStatus)
-
     // Show feedback panel
     this.setState({
       feedbackVisible: true
     })
   }
 
-  onNewFileSubmitted() {
-    // Update status
-    this.setStatus("Processing file...")
-    // Reset feedback
+  setError(newError) {
     this.setState({
-      feedbackVisible: false,
-      predictedCorrect: null
+      error: newError
     })
   }
 
-  setStatus(newStatus) {
+  setProcessing(isProcessing) {
     this.setState({
-      status: newStatus
+      isProcessing: isProcessing,
     })
   }
 
@@ -186,6 +213,16 @@ class PredictForm extends React.Component {
     // Send file for prediction
     const formData = new FormData();
     formData.append('image', file);
+
+    this.setProcessing(true)
+
+    // Reset state
+    this.setState({
+      feedbackVisible: false,
+      predictedCorrect: null,
+      prediction: null,
+      error: null,
+    })
 
     fetch(`${API_ROOT}/predict`, {
       // content-type header should not be specified!
@@ -201,12 +238,14 @@ class PredictForm extends React.Component {
       })
       .catch(error => {
         console.log(error)
-        this.setStatus(error.toString())
-      }
-      )
+        this.setError(error.toString())
+      })
+      .finally(() => {
+        this.setProcessing(false)
+      })
 
-    // Switch UI state on file submitted
-    this.onNewFileSubmitted()
+    
+
   }
 
   onChangeHandler = event => {
