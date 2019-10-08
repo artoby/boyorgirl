@@ -3,8 +3,7 @@ let backendHost;
 const hostname = window && window.location && window.location.hostname;
 
 console.log(hostname)
-// if(hostname === 'boyorgirl.artoby.me') {
-if (true) {
+if(hostname === 'boyorgirl.artoby.me') {
   backendHost = 'https://boyorgirl.artoby.me';
 } else {
   backendHost = process.env.REACT_APP_BACKEND_HOST || 'http://localhost:3100';
