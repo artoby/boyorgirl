@@ -28,17 +28,10 @@ if not os.path.exists(uploads_path):
 # Load prediction model
 learn = load_learner(ai_models_path)
 
-# app = Starlette(debug=True)
-
 app = Starlette()
 app.add_middleware(CORSMiddleware, allow_origins=['http://localhost:3000',
                                                   'http://boyorgirl.artoby.me',
                                                   'https://boyorgirl.artoby.me'])
-# app.add_middleware(CORSMiddleware, allow_origins=['*'])
-
-# app = Router(routes=[
-#     # Mount('/static', app=StaticFiles(directory='static'), name="static"),
-# ])
 
 @app.route('/api/hello_world')
 async def homepage(request):

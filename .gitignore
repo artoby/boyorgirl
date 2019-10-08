@@ -2,3 +2,5 @@
 venv
 sample_images/private*
 uploads/
+client/node_modules
+client/build
