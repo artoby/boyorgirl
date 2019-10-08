@@ -5,7 +5,7 @@ import Image from 'react-bootstrap/Image'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Button from 'react-bootstrap/Button'
-import Col from 'react-bootstrap/Col'
+// import Col from 'react-bootstrap/Col'
 import Navbar from 'react-bootstrap/Navbar'
 import 'holderjs'
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -121,10 +121,13 @@ class PredictForm extends React.Component {
 
   onImageSelect(event) {
     let file = event.target.files[0]
-    this.setState({
-      fileLocalURL: URL.createObjectURL(file)
-    });
-    this.sendPredictRequest(file)
+    // If any file was selected at all
+    if (file != null) {
+      this.setState({
+        fileLocalURL: URL.createObjectURL(file)
+      });
+      this.sendPredictRequest(file)
+    }
   }
 
   setPrediction(prediction) {
@@ -170,9 +173,12 @@ class PredictForm extends React.Component {
       method: 'POST',
       body: formData,
     })
-      .then(response => response.json())
       .then(response => {
-        console.log(response)
+          console.log(response)
+          return response.json()
+      })
+      .then(response => {
+        console.log(JSON.stringify(response))
         this.setPrediction(response)
       })
       .catch(error => {
