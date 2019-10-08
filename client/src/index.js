@@ -173,12 +173,10 @@ class PredictForm extends React.Component {
       method: 'POST',
       body: formData,
     })
+      .then(response => response.text())
       .then(response => {
-          console.log(response)
-          return response.json()
-      })
-      .then(response => {
-        console.log(JSON.stringify(response))
+        console.log("Response received: " + response)
+        response = JSON.parse(response)
         this.setPrediction(response)
       })
       .catch(error => {
