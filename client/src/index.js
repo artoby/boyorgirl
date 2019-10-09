@@ -36,17 +36,8 @@ class PredictForm extends React.Component {
     return (
       <div class="container">
         <div class="content">
-          {/* <Navbar bg="light" expand="lg">
-            <Navbar.Brand href="#home" align="center">Check if baby boy or girl on the photo</Navbar.Brand>
-          </Navbar> */}
           <h2 align="center">Check if baby <span class="boy">boy</span> or <span class="girl">girl</span> on the photo</h2>
 
-          {/* <input
-            type="file"
-            class="file-input"
-            onChange={(event) => this.onImageSelect(event)}
-          /> */}
-          
           <div align="center">
             <input type="file" id="file" onChange={(event) => this.onImageSelect(event)}/>
             <label for="file">Choose File</label>
@@ -79,13 +70,14 @@ class PredictForm extends React.Component {
       let spanClass = (prediction["predicted_class"] === CLASS_BOY)
         ? "boy"
         : "girl"
-      let text = (prediction["predicted_class"] === CLASS_BOY)
+      let text = ""
+      text += (prediction["predicted_class"] === CLASS_BOY)
         ? "Boy"
         : "Girl"
       text += " " + Math.round(prediction["probability"] * 100) + "%"
 
       return (
-        <div class="text overlay-back"><span class={spanClass}>{text}</span></div>
+        <div class="text overlay-back"><p class={spanClass}>{text}<br/>©AI</p></div>
       )
     }
   }
