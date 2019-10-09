@@ -8,17 +8,17 @@ import {
   faGithub,
 
 } from "@fortawesome/free-brands-svg-icons";
-import './SocialFollow.css';
+import './Social.css';
 
 
 
 export default function SocialFollow() {
   return (
     <div className="social-container">
-      <h6>@artobyAI</h6>
+      <h6>Follow</h6>
 
       <a href="https://www.twitter.com/r2bAI" className="twitter social">
-        <FontAwesomeIcon icon={faTwitter} size="2x" />
+        <FontAwesomeIcon icon={faTwitter}  size="2x" />
       </a>
 
       <a
@@ -31,7 +31,7 @@ export default function SocialFollow() {
         href="https://github.com/artoby/boyorgirl"
         className="github social"
       >
-        <FontAwesomeIcon icon={faGithub} size="2x" />source code
+        <FontAwesomeIcon icon={faGithub} size="2x" />(code)
       </a>
     </div>
   );

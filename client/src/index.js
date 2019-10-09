@@ -5,6 +5,7 @@ import 'holderjs'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { API_ROOT } from './api-config';
 import SocialFollow from "./SocialFollow";
+
 import './index.css';
 
 const CLASS_BOY = "boys"
@@ -30,8 +31,8 @@ class PredictForm extends React.Component {
 
   render() {
     let image_src = (this.state.fileLocalURL != null)
-    ? this.state.fileLocalURL
-    : "holder.js/200x200?auto=yes&text=↑Choose%20File%20to%20start↑"
+      ? this.state.fileLocalURL
+      : "holder.js/200x200?auto=yes&text=↑Choose%20File%20to%20start↑"
 
     return (
       <div class="container">
@@ -39,12 +40,12 @@ class PredictForm extends React.Component {
           <h2 align="center">Check if baby <span class="boy">boy</span> or <span class="girl">girl</span> on the photo</h2>
 
           <div align="center">
-            <input type="file" id="file" onChange={(event) => this.onImageSelect(event)}/>
+            <input type="file" id="file" onChange={(event) => this.onImageSelect(event)} />
             <label for="file">Choose File</label>
-            </div>
+          </div>
 
           <div class="overlay-image">
-            <img src={image_src} alt="baby"/>
+            <img src={image_src} alt="baby" />
             {this.renderImageOverlay()}
           </div>
 
@@ -53,7 +54,7 @@ class PredictForm extends React.Component {
           {this.renderFeedback()}
 
           <SocialFollow />
-          
+
         </div>
 
       </div>
@@ -77,7 +78,7 @@ class PredictForm extends React.Component {
       text += " " + Math.round(prediction["probability"] * 100) + "%"
 
       return (
-        <div class="text overlay-back"><p class={spanClass}>{text}<br/>©AI</p></div>
+        <div class="text overlay-back"><p class={spanClass}>{text}<br />©AI</p></div>
       )
     }
   }
@@ -94,10 +95,6 @@ class PredictForm extends React.Component {
 
   renderFeedback() {
     if (this.state.feedbackVisible) {
-      // // Set style for buttons
-      // {
-
-      // }
       let yesStyle, noStyle
       if (this.state.predictedCorrect == null) {
         yesStyle = noStyle = "toggle"
@@ -113,7 +110,7 @@ class PredictForm extends React.Component {
         <div align="center">
           <h3>Is it correct?</h3>
           <div>
-            <Button className={yesStyle}  variant="success" onClick={() => this.onFeedbackClicked(true)}>Yes</Button>
+            <Button className={yesStyle} variant="success" onClick={() => this.onFeedbackClicked(true)}>Yes</Button>
             <Button className={noStyle} variant="danger" onClick={() => this.onFeedbackClicked(false)}>No</Button>
           </div>
         </div>
@@ -235,7 +232,7 @@ class PredictForm extends React.Component {
         this.setProcessing(false)
       })
 
-    
+
 
   }
 
