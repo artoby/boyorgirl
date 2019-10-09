@@ -1,16 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-import Row from 'react-bootstrap/Row'
 import Button from 'react-bootstrap/Button'
-// import Col from 'react-bootstrap/Col'
-import Navbar from 'react-bootstrap/Navbar'
 import 'holderjs'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { API_ROOT } from './api-config';
+import SocialFollow from "./SocialFollow";
+import './index.css';
 
 const CLASS_BOY = "boys"
-const CLASS_GIRL = "girls"
+// const CLASS_GIRL = "girls"
 
 class PredictForm extends React.Component {
   constructor(props) {
@@ -55,7 +53,7 @@ class PredictForm extends React.Component {
             </div>
 
           <div class="overlay-image">
-            <img src={image_src} />
+            <img src={image_src} alt="baby"/>
             {this.renderImageOverlay()}
           </div>
 
@@ -63,6 +61,7 @@ class PredictForm extends React.Component {
 
           {this.renderFeedback()}
 
+          <SocialFollow />
           
         </div>
 
@@ -77,10 +76,10 @@ class PredictForm extends React.Component {
       )
     } else if (this.state.prediction != null) {
       let prediction = this.state.prediction
-      let spanClass = (prediction["predicted_class"] == CLASS_BOY)
+      let spanClass = (prediction["predicted_class"] === CLASS_BOY)
         ? "boy"
         : "girl"
-      let text = (prediction["predicted_class"] == CLASS_BOY)
+      let text = (prediction["predicted_class"] === CLASS_BOY)
         ? "Boy"
         : "Girl"
       text += " " + Math.round(prediction["probability"] * 100) + "%"
