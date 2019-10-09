@@ -4,3 +4,5 @@
 /client/node_modules
 /client/build
 /notebooks/data
+
+.ipynb_checkpoints
