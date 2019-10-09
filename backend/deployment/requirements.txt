@@ -2,5 +2,4 @@ starlette
 uvicorn
 fastai
 Pillow
-jinja2
 python-multipart

@@ -1,6 +1,6 @@
 .idea
-venv
-sample_images/private*
-uploads/
-client/node_modules
-client/build
+/sample_images/private*
+/backend/uploads/
+/client/node_modules
+/client/build
+/notebooks/data
