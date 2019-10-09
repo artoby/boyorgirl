@@ -1,6 +1,8 @@
 git pull
 
-./nginx/symlink-nginx-sites.sh
+cd ./nginx
+./symlink-nginx-sites.sh
+cd ..
 
 cd ./backend
 sudo docker build -t bog_base:1 -f Dockerfile_base .
