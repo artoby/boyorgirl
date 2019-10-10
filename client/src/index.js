@@ -35,16 +35,16 @@ class PredictForm extends React.Component {
       : "holder.js/200x200?auto=yes&text=↑Choose%20File%20to%20start↑"
 
     return (
-      <div class="container">
-        <div class="content">
-          <h2 align="center">Check if baby <span class="boy">boy</span> or <span class="girl">girl</span> on the photo</h2>
+      <div className="container">
+        <div className="content">
+          <h2 align="center">Check if baby <span className="boy">boy</span> or <span className="girl">girl</span> on the photo</h2>
 
           <div align="center">
             <input type="file" id="file" onChange={(event) => this.onImageSelect(event)} />
-            <label for="file">Choose File</label>
+            <label htmlFor="file">Choose File</label>
           </div>
 
-          <div class="overlay-image">
+          <div className="overlay-image">
             <img src={image_src} alt="baby" />
             {this.renderImageOverlay()}
           </div>
@@ -64,7 +64,7 @@ class PredictForm extends React.Component {
   renderImageOverlay() {
     if (this.state.isProcessing) {
       return (
-        <div class="text overlay-back">Processing...</div>
+        <div className="text overlay-back">Processing...</div>
       )
     } else if (this.state.prediction != null) {
       let prediction = this.state.prediction
@@ -78,7 +78,7 @@ class PredictForm extends React.Component {
       text += " " + Math.round(prediction["probability"] * 100) + "%"
 
       return (
-        <div class="text overlay-back"><p class={spanClass}>{text}<br />©AI</p></div>
+        <div className="text overlay-back"><p className={spanClass}>{text}<br />©AI</p></div>
       )
     }
   }
